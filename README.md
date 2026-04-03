@@ -12,6 +12,8 @@
 - 检索增强生成（RAG Chain）
 - 多会话的对话历史（v0.1.0 为链式模式）
 
+> 📝 本项目有详细的开发教程博客，欢迎阅读：[第6篇：实战项目-智能知识库助手（入门版）](https://blog.csdn.net/weixin_46253270/article/details/155783565)
+
 ## ✨ 核心功能
 
 ### v0.1.0 功能特性
@@ -106,13 +108,6 @@ smart_knowledge_assistant/
 python -m unittest -q
 ```
 
-## 🔖 版本发布（tag）
-
-```bash
-git tag v0.1.0
-git push origin v0.1.0
-```
-
 ## 🤝 贡献指南
 
 欢迎提交 Issue 和 PR：
@@ -129,6 +124,12 @@ git push origin v0.1.0
 
 ## 📞 联系方式
 
-- 作者：biao994
+- 项目链接: [https://github.com/biao994/mcp-datatools](https://github.com/biao994/mcp-datatools)
+- 作者: biao994
+- 邮箱: zhengweibiao37@gmail.com
+
+---
+
+⭐ 如果这个项目对你有帮助，请给个 Star 支持一下！
 
 
