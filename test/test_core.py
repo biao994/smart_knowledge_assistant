@@ -110,6 +110,5 @@ class TestCoreFunctions(unittest.TestCase):
         # 会话ID应该仍然存在，当历史记录已被清空
         self.assertIn("session1", memory_manager.get_all_sessions())
 
-# 这个条件确保只有直接运行此脚本时才会执行测试
 if  __name__ == "__main__":
     unittest.main()

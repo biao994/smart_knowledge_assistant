@@ -1,35 +1,41 @@
 # smart_knowledge_assistant
 
-一个最小可跑通的智能知识库助手：加载本地文本 → 构建 FAISS 向量库 → 基于检索增强生成（RAG）进行交互式问答。
+基于 LangChain + LangGraph 的智能知识库助手：本地文本 → FAISS 向量库 → **RAG 链式问答（入门版）** 或 **Agent + 多工具（进阶版 v0.2.0）**。
 
+> 版本说明：`v0.1.0` 为纯 LCEL 链 + 会话记忆；`v0.2.0` 默认入口为 **Agent 模式**（可在 `main.py` 中切换 `use_agent`）。
 
 ## 🎯 项目概述
 
-`smart_knowledge_assistant` 旨在提供一个“从零到可运行”的 RAG 小项目模板，适合学习/复现：
+- 文档加载（多编码兜底）→ 切分 → OpenAI Embeddings → **FAISS 本地索引**
+- **入门版**：`RunnableWithMessageHistory` 多轮对话 + RAG
+- **进阶版**：`create_agent` + 工具（知识库问答 / 关键词检索 / 摘要）+ **Checkpointer**（LangGraph `MemorySaver`）
 
-- 文档加载与清洗（文本、多编码兜底）
-- 文档切分 → 向量化 → 本地向量库（FAISS）
-- 检索增强生成（RAG Chain）
-- 多会话的对话历史（v0.1.0 为链式模式）
+> 📝 配套博客（入门版）：[第6篇：实战项目-智能知识库助手（入门版）](https://blog.csdn.net/weixin_46253270/article/details/155783565)
+> 📝 配套博客（进阶版）：[第11篇：实战项目-智能知识库助手（进阶版）](https://blog.csdn.net/weixin_46253270/article/details/156907380?spm=1001.2014.3001.5501)
 
-> 📝 本项目有详细的开发教程博客，欢迎阅读：[第6篇：实战项目-智能知识库助手（入门版）](https://blog.csdn.net/weixin_46253270/article/details/155783565)
 
-## ✨ 核心功能
 
-### v0.1.0 功能特性
-- 📄 **load_documents()** - 加载本地 `.txt` 文档（支持多编码兜底）
-- 🧩 **split + embed** - 文档切分 + OpenAI Embeddings 向量化
-- 🗄️ **FAISS 本地向量库** - 首次运行自动构建，后续自动加载
-- 💬 **RAG 对话问答** - 基于检索到的上下文进行回答
-- 🧠 **多轮对话记忆** - 基于 `RunnableWithMessageHistory` 的会话历史管理
+
+## ✨ 核心功能（v0.2.0）
+
+### 进阶版（Agent）
+- 🤖 **Agent 调度** - 根据意图选择工具
+- 🔧 **query_knowledge_base** - RAG 理解型问答
+- 🔎 **search_documents** - 检索片段 + 关键词高亮
+- 📝 **summarize_document** - 主题摘要
+- 🧠 **Checkpointer** - 线程级对话状态（`thread_id`）
+
+### 入门版（LCEL）
+- 💬 **多轮对话** - `session_id` 隔离历史
+- 🗄️ **FAISS + RAG** - 与 v0.1.0 一致
 
 ## 🏗️ 技术架构
 
-- **框架**：LangChain（链式编排）
-- **LLM**：OpenAI Chat（通过环境变量配置）
-- **Embedding**：OpenAI Embeddings
-- **向量库**：FAISS（本地）
-- **配置**：Python dict + 默认配置合并（`core/config.py`）
+- **编排**：LangChain LCEL、`langchain.agents.create_agent`
+- **状态**：LangGraph `MemorySaver`（进阶版）
+- **LLM / Embedding**：OpenAI（`langchain-openai`）
+- **向量库**：FAISS（`langchain-community`）
+- **配置**：`core/config.py` 默认配置 + `merge_config`
 
 ## 🚀 快速开始
 
@@ -47,62 +53,55 @@ pip install -r requirements.txt
 copy .env.example .env
 ```
 
+编辑 `.env`，填入 `OPENAI_API_KEY`。可选：`OPENAI_BASE_URL`（兼容代理/兼容端点）。
 
-### 3. 运行项目
+### 3. 运行
 
-```bash
-python main.py
-```
-
-首次运行会在本地生成 `faiss_index/`
-
-## 📚 使用示例
-
-### 1. 启动交互式问答
+默认 **进阶版（Agent）**：
 
 ```bash
 python main.py
 ```
 
-### 2. 常用命令
+切换为 **入门版**：在 `main.py` 中将 `use_agent=True` 改为 `use_agent=False`，并按注释调整 `interactive_chat` 的 `session_id` / `thread_id`。
 
-- 输入 `退出` / `quit` / `exit` 结束对话
-- 输入 `重置` / `reset` 清空会话记忆
+首次运行会生成 `faiss_index/`（已忽略）；再次运行会加载已有索引。
 
-### 3. 替换知识库内容
+## 📚 使用说明
 
-在 `main.py` 中替换：
-
-- `load_documents([...])` 传入你自己的 `.txt` 路径
-- 或直接替换示例文本 `崔老道捉妖之夜闯董妃坟.txt`
+- 输入 `退出` / `quit` / `exit` 结束
+- 输入 `重置` / `reset` 清空当前会话/线程记忆
+- 替换知识库：修改 `main.py` 中 `load_documents([...])` 的路径或替换示例 `崔老道捉妖之夜闯董妃坟.txt`
 
 ## 📁 项目结构
 
 ```
 smart_knowledge_assistant/
-├── main.py                 # 入口：初始化、构建/加载向量库、启动交互式对话
-├── requirements.txt        # 依赖
-├── .env.example            # 环境变量示例（不要提交 .env）
-├── api/
-│   └── app.py              # SmartKnowledgeAssistant 主类
+├── main.py
+├── requirements.txt
+├── .env.example
+├── api/app.py
 ├── core/
-│   ├── config.py           # 默认配置与合并
-│   ├── loaders.py          # 文档加载（多编码兜底）
-│   ├── vectorstore.py      # FAISS 向量库管理
-│   ├── chain.py            # RAG Chain 构建
-│   └── memory.py           # 会话历史管理
+│   ├── agent.py        # Agent（进阶版）
+│   ├── tools.py        # 工具定义
+│   ├── middleware.py   # 日志/性能/错误中间件
+│   ├── memory.py       # 链式记忆 + Agent Checkpointer
+│   ├── chain.py
+│   ├── vectorstore.py
+│   ├── loaders.py
+│   └── config.py
 └── test/
-    └── test_core.py        # 核心功能单测（可选）
+    ├── test_core.py
+    ├── test_agent_tools.py
+    └── test_clear_session.py
 ```
 
-## 🛡️ 安全特性 / 安全提示
+## 🛡️ 安全提示
 
-- **密钥管理**：只提交 `.env.example`，禁止提交 `.env`
-- **索引安全**：加载本地 FAISS 索引时允许反序列化，请仅加载自己生成、可信来源的索引文件
+- 禁止将真实密钥提交到仓库
+- 仅加载**自己生成、可信**的 FAISS 索引（加载时使用 `allow_dangerous_deserialization=True`）
 
-## 🔧 开发指南
-
-### 运行单元测试（可选）
+## 🔧 开发
 
 ```bash
 python -m unittest -q
@@ -110,26 +109,20 @@ python -m unittest -q
 
 ## 🤝 贡献指南
 
-欢迎提交 Issue 和 PR：
+## 🤝 贡献
 
-1. Fork 项目
-2. 新建分支：`git checkout -b feature/xxx`
-3. 提交更改：`git commit -m "feat: ..."`
-4. 推送分支：`git push origin feature/xxx`
-5. 打开 Pull Request
+1. Fork → 新建分支 → 提交 PR
 
 ## 📄 许可证
 
-本项目采用 MIT 许可证 - 查看 [LICENSE](LICENSE) 文件了解详情
+MIT — 见仓库内 `LICENSE`（若有）。
 
 ## 📞 联系方式
 
-- 项目链接: [https://github.com/biao994/mcp-datatools](https://github.com/biao994/mcp-datatools)
-- 作者: biao994
-- 邮箱: zhengweibiao37@gmail.com
+- 仓库：[https://github.com/biao994/smart_knowledge_assistant](https://github.com/biao994/smart_knowledge_assistant)
+- 作者：biao994
+- 邮箱：zhengweibiao37@gmail.com
 
 ---
 
-⭐ 如果这个项目对你有帮助，请给个 Star 支持一下！
-
-
+⭐ 若对你有帮助，欢迎 Star。

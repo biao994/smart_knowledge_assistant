@@ -36,7 +36,7 @@ class VectorStoreManager:
             documents: 文档列表
             save_path: 向量数据库保存路径（可选）
         """
-        save_path = save_path or self.config.get("vector_store_path", "./faiss_index")
+        save_path = save_path or self.config.get("vector_store_path") or self.config.get("vectorstore", "./faiss_index")
         
         # 定义文档分割器
         text_splitter = RecursiveCharacterTextSplitter(
@@ -101,5 +101,3 @@ class VectorStoreManager:
             search_type="similarity",
             search_kwargs={"k": self.config.get("search_k", 5)}
         )
-
-        

@@ -1,10 +1,10 @@
 import logging
-from typing import Dict
+from typing import Dict, Optional
 
 from langchain_community.chat_message_histories import ChatMessageHistory
 from langchain_core.runnables.history import RunnableWithMessageHistory
 from langchain_core.runnables import Runnable
-
+from langgraph.checkpoint.memory import MemorySaver
 
 logger = logging.getLogger(__name__)
 
@@ -73,6 +73,35 @@ class MemoryManager:
         """
         return list(self.store.keys())
 
+class AgentMemoryManager:
+    """Agent状态管理器 - 使用Checkpointer实现Agent的状态管理（进阶版）"""
+    def __init__(self, use_postgres: bool = False, postgres_url: Optional[str] = None):
+        """
+        初始化Agent状态管理器
 
+        Args:
+            use_postgres: 是否使用PostgreSQL持久化（生产环境）
+            postgres_url: PostgreSQL连接URL
+        """
 
-        
+        if use_postgres and postgres_url:
+            # 生产环境：使用PostgreSQL持久化
+            try:
+                from langchain_postgres import PostgresSaver
+                self.checkpointer = PostgresSaver.from_conn_string(postgres_url)
+                logger.info("使用PostgreSQL进行状态持久化")
+            except ImportError:
+                logger.warning("未安装langchain-postgres，使用内存存储")
+            except Exception as e:
+                logger.error(f"PostgreSQL初始化失败: {e}")
+                self.checkpointer = MemorySaver()
+        else:
+            # 开发环境：使用内存存储
+            self.checkpointer = MemorySaver()
+            logger.info("使用内存存储进行状态持久化")
+
+    def get_checkpointer(self):
+        """
+        获取Checkpointer实例
+        """
+        return self.checkpointer

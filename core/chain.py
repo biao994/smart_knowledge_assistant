@@ -126,4 +126,3 @@ def build_rag_chain(retriever: BaseRetriever,config:dict) -> Runnable:
 
     logger.info("RAG链构建完成")
     return rag_chain
-
