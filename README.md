@@ -11,6 +11,7 @@
 - **进阶版**：`create_agent` + 工具（知识库问答 / 关键词检索 / 摘要）+ **Checkpointer**（LangGraph `MemorySaver`）
 
 > 📝 配套博客（入门版）：[第6篇：实战项目-智能知识库助手（入门版）](https://blog.csdn.net/weixin_46253270/article/details/155783565)
+
 > 📝 配套博客（进阶版）：[第11篇：实战项目-智能知识库助手（进阶版）](https://blog.csdn.net/weixin_46253270/article/details/156907380?spm=1001.2014.3001.5501)
 
 
@@ -108,8 +109,6 @@ python -m unittest -q
 ```
 
 ## 🤝 贡献指南
-
-## 🤝 贡献
 
 1. Fork → 新建分支 → 提交 PR
 
