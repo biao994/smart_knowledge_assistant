@@ -6,15 +6,13 @@
 
 ## 🎯 项目概述
 
-- 文档加载（多编码兜底）→ 切分 → OpenAI Embeddings → **FAISS 本地索引**
+- 文档加载 → 切分 → OpenAI Embeddings → **FAISS 本地索引**
 - **入门版**：`RunnableWithMessageHistory` 多轮对话 + RAG
 - **进阶版**：`create_agent` + 工具（知识库问答 / 关键词检索 / 摘要）+ **Checkpointer**（LangGraph `MemorySaver`）
 
 > 📝 配套博客（入门版）：[第6篇：实战项目-智能知识库助手（入门版）](https://blog.csdn.net/weixin_46253270/article/details/155783565)
 
-> 📝 配套博客（进阶版）：[第11篇：实战项目-智能知识库助手（进阶版）](https://blog.csdn.net/weixin_46253270/article/details/156907380?spm=1001.2014.3001.5501)
-
-
+> 📝 配套博客（进阶版）：[第11篇：实战项目-智能知识库助手（进阶版）](https://blog.csdn.net/weixin_46253270/article/details/156907380)
 
 
 ## ✨ 核心功能（v0.2.0）
@@ -102,7 +100,7 @@ smart_knowledge_assistant/
 - 禁止将真实密钥提交到仓库
 - 仅加载**自己生成、可信**的 FAISS 索引（加载时使用 `allow_dangerous_deserialization=True`）
 
-## 🔧 开发
+## 🧪 测试
 
 ```bash
 python -m unittest -q
